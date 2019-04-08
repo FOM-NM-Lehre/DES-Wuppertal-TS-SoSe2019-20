@@ -29,15 +29,21 @@ data(Alcohol)
 ```
 
 
-Möchte mensch die ersten und letzten Einträge in dem Datensatz sehen, so geht das mit:
+Möchte mensch die ersten Einträge im Datensatz sehen, so geht das mit:
 
 ```{r}
 head(Alcohol)  # Die ersten Beobchtungen
+```
+
+
+Die letzten Einträge in dem Datensatz können wir mit dem folgenden Befehl erhalten:
+
+```{r}
 tail(Alcohol)  # Die letzten Beobachtungen
 ```
 
 
-Wir interessieren uns einmal nur für die Werte aus Deutschland:
+Wir interessieren uns zuerst nur für die Werte aus Deutschland. Wir "filtrieren" dazu den Datensatz wie folgt:
 
 ```{r}
 Alcohol.Ger <- Alcohol %>% filter(country == "Germany")
@@ -53,10 +59,11 @@ Alcohol.2008 <- Alcohol %>% filter(year == 2008)
 
 Wir können also einzelne Beobachtungen "filtern"!
 
-Mensch kann die Spalten auswählen mit "select()", so können wir hier die "country" und "alcohol" Spalte/ Variable auswählen (und dabei nur die 2008er berücksichtigen):
+Falls wir uns nur noch für das Jahr 2008 interessieren sind alle anderen Spalten als die Spalten der Länder und der Alkoholmengen für uns uninteressant. Also erzeugen wir und eine neue Tabelle "Alcohol.2008" in der nur das nötigste enthalten ist.
+Dazu "filtern" wir das Jahr 2008 herraus und "selektieren" die Spalten country und alcohol:
 
 ```{r}
-Alcohol.2008 <- Alcohol %>% # Ich bin nur ein Kommentar!!! :-(
+Alcohol.2008 <- Alcohol %>% # Ich bin nur ein Kommentar!!! ;-)
   filter(year == 2008) %>%  # Nur das Jahr 2008 ist von Interesse 
   select(country, alcohol)  # Nur Land und Alkoholverbrauch!
 ```
@@ -70,11 +77,11 @@ Alcohol.2008.sort <- Alcohol.2008 %>%
 ```
 
 
-Vielleicht interessiert doch eher der "Rang", das können wir wie folgt hinzufügen:
+Vielleicht interessiert doch eher der "Rang", das können wir wie folgt hinzufügen. Dazu "mutieren" wir den Datensatz mit dem Befehl `mutate()` und erzeugen so eine neue Spalte:
 
 ```{r}
 Alcohol.2008.rank <- Alcohol.2008 %>%
-  mutate(rank = rank(alcohol))
+  mutate(rank = rank(alcohol))        # Neue Spalte "rank" mit dem Rang hinzufügen!
 ```
 
 
@@ -86,22 +93,28 @@ Alcohol.2008.rank %>%
 ```
 
 
-Und wie sieht das mit Deutschland, Schweiz und Österreich aus?
+Wie sieht das mit Deutschland, Österreich, Schweiz, Spanien, Griechenland und Groß-Britanien im Vergleich aus?
 
 ```{r}
-Alcohol.2008.rank %>%
-  filter(country == "Germany" | country == "Austria" | country == "Switzerland")
+Alcohol.2008.rank %>% filter(
+  country == "Germany" |
+  country == "Austria" |
+  country == "Switzerland" |
+  country == "Spain" |
+  country == "Greece" |
+  country == "United Kingdom"
+)
 ```
 
 
-Jetzt noch ein Wort zu den Variablentypen in R:
+Wie speichert R das intern ab?
 
 ```{r}
 str(Alcohol)
 ```
 
 
-Alternative geht auch:
+Und was hat R an Daten erkannt und wie?
 
 ```{r}
 inspect(Alcohol)
