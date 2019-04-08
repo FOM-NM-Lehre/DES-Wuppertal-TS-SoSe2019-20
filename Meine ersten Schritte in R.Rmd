@@ -232,3 +232,112 @@ gf_histogram( ~ tip,          # Analysiere die Trinkgelder
               binwidth = 1,
               center = 0.5)
 ```
+
+
+## Vorlesung vom 8.4.2019
+
+Zunächst laden wir noch einmal "Mosaic" und den Datensatz "tips":
+
+```{r}
+library(mosaic)
+tips <- read.csv2("tips.csv")
+```
+
+Ein Blick auf die Daten mit dem "inspect"-Befehl:
+
+```{r}
+inspect(tips)
+```
+
+Ein Blick auf die Kennzahlen des Rechnungsbetrages:
+
+```{r}
+favstats( ~ total_bill, data=tips)
+```
+
+
+Ein Boxplot:
+
+```{r}
+gf_boxplot( ~ tip , data=tips)
+```
+
+
+
+
+### Übung 48;
+
+```{r}
+gf_boxplot( total_bill ~ smoker, data= tips)
+```
+```{r}
+gf_boxplot( ~ total_bill | smoker , data=tips)
+```
+
+
+```{r}
+gf_boxplot( ~ total_bill | sex, data = tips)
+```
+
+Die Kennzahlen zum Boxpolot:
+
+```{r}
+favstats( ~ total_bill | sex , data=tips)
+```
+
+
+
+
+
+
+
+
+
+
+```{r}
+gf_point(total_bill ~ tip, data=tips)
+```
+
+```{r}
+cor(total_bill ~ tip, data=tips)
+
+```
+
+Neue Spalte mit relativer Trinkgeldhöhe:
+
+```{r}
+tips <- tips %>%
+  mutate(rel_tip = tip/total_bill)
+```
+
+Das Streudiagramm:
+
+```{r}
+gf_point(rel_tip ~ total_bill, data=tips)
+```
+
+
+```{r}
+gf_point( total_bill ~ rel_tip, data=tips)
+```
+
+
+
+```{r}
+gf_histogram( ~ total_bill | smoker, data=tips)
+```
+
+```{r}
+gf_boxplot( ~ total_bill | smoker, data=tips)
+```
+
+
+```{r}
+favstats( ~ total_bill | smoker, data=tips)
+```
+
+```{r}
+iqr( ~ total_bill | smoker, data=tips)
+```
+
+
