@@ -1,7 +1,8 @@
 ---
 title: "Meine ersten Schritte in R"
+subtitle: "Wuppertal (Tagesstudium)"
 author: "Norman Markgraf"
-date: "25 März 2019"
+date: "Sommersemester 2019/20"
 output: word_document
 ---
 
@@ -20,11 +21,13 @@ Zu Beginn einer jeden Vorlesung müssen wir zuerst Mosaic starten. Das geht wie 
 library(mosaic)
 ```
 
+
 In R sind interne Datensätze vorhanden, u.a. der Datensatz "Alcohol", den man aber erst sieht, wenn man hin freischaltet:
 
 ```{r}
 data(Alcohol)
 ```
+
 
 Möchte mensch die ersten und letzten Einträge in dem Datensatz sehen, so geht das mit:
 
@@ -33,11 +36,13 @@ head(Alcohol)  # Die ersten Beobchtungen
 tail(Alcohol)  # Die letzten Beobachtungen
 ```
 
+
 Wir interessieren uns einmal nur für die Werte aus Deutschland:
 
 ```{r}
 Alcohol.Ger <- Alcohol %>% filter(country == "Germany")
 ```
+
 
 Falls wir uns nur für das Jahr 2008 interessieren könnten wir wie folgt filtern:
 
@@ -49,7 +54,6 @@ Alcohol.2008 <- Alcohol %>% filter(year == 2008)
 Wir können also einzelne Beobachtungen "filtern"!
 
 Mensch kann die Spalten auswählen mit "select()", so können wir hier die "country" und "alcohol" Spalte/ Variable auswählen (und dabei nur die 2008er berücksichtigen):
-
 
 ```{r}
 Alcohol.2008 <- Alcohol %>% # Ich bin nur ein Kommentar!!! :-(
@@ -89,6 +93,7 @@ Alcohol.2008.rank %>%
   filter(country == "Germany" | country == "Austria" | country == "Switzerland")
 ```
 
+
 Jetzt noch ein Wort zu den Variablentypen in R:
 
 ```{r}
@@ -105,19 +110,22 @@ inspect(Alcohol)
 
 ## Vorlesung vom 01.04.2019
 
-Wir laden zunächst "MOSAIC":
+Wir laden zunächst "mosaic":
 
 ```{r}
 library(mosaic)
 ```
 
-Herunterladen und Einlesen der "tipping"-Daten:
+
+Dann laden wir die "tipping"-Daten herunter und lesen diese in die Variable "tips":
 
 ```{r}
 download.file("https://goo.gl/whKjnl", destfile="tips.csv")
 tips <- read.csv2("tips.csv")
 ```
-Wir laden nun noch "gridExtra" nach:
+
+
+Wir laden nun noch "gridExtra" nach, da wir später zwei Tabellen nebeneinander darstellen möchten:
 
 ```{r}
 library(gridExtra)
@@ -148,6 +156,8 @@ Wir sehen:
 
 ### Säulen und Balkendiagramme in R
 
+Mit "grind.arrange" können wir die zwei Diagramme (plot1 und plot2) nebeneinander darstellen:
+
 ```{r}
 # Zwei Plots erzeugen
 plot1 <- gf_bar(             # Säulendiagramm
@@ -169,14 +179,14 @@ prop( ~ sex, success = "Female", data=tips)
 ```
 
 
-
-Die absoluten Häufigkeiten als Tabelle erhalten wir mit:
+Die *absoluten* Häufigkeiten als Tabelle erhalten wir mit:
 
 ```{r}
 tally( ~ sex, data=tips)
 ```
 
-Die relativen Häufigkeiten als Tabelle erhalten wir mit:
+
+Die *relativen* Häufigkeiten als Tabelle erhalten wir mit:
 
 ```{r}
 tally( ~ sex,
@@ -194,28 +204,24 @@ gf_bar(   # Säulendiagramm (engl. bar chart)
   )
 ```
 
+
 Die Tabellen zu der Grafik:
 
 ```{r}
-tally(   # Säulendiagramm (engl. bar chart)
+tally(   # tabelle (engl. tally für Stichliste)
   ~ sex   # analysiere das Geschlecht
   | time, # gruppiere nach der Zeit
+  format = "proportion", # gib Anteilswerte an
   data = tips # Datensatz "tips"
   )
 ```
-```{r}
-tally(   # Säulendiagramm (engl. bar chart)
-  ~ sex   # analysiere das Geschlecht
-  | time, # gruppiere nach der Zeit
-  format = "proportion",
-  data = tips # Datensatz "tips"
-  )
-```
+
 
 ```{r}
 tally( ~ smoker | day, format="proportion", data = tips )
 tally( ~ day | smoker, format="proportion", data = tips )
 ```
+
 
 ### Übung 31
 
@@ -224,13 +230,6 @@ gf_histogram( ~ tip,          # Analysiere die Trinkgelder
               binwidth = 1,   # Breite der bins (Körbe)
               center = 0.5,   # Mitte des bins (Korbmitte)
               data = tips)    # Datensatz tips
-```
-
-```{r}
-gf_histogram( ~ tip,          # Analysiere die Trinkgelder  
-              data = tips,
-              binwidth = 1,
-              center = 0.5)
 ```
 
 
@@ -243,11 +242,13 @@ library(mosaic)
 tips <- read.csv2("tips.csv")
 ```
 
+
 Ein Blick auf die Daten mit dem "inspect"-Befehl:
 
 ```{r}
 inspect(tips)
 ```
+
 
 Ein Blick auf die Kennzahlen des Rechnungsbetrages:
 
@@ -263,9 +264,7 @@ gf_boxplot( ~ tip , data=tips)
 ```
 
 
-
-
-### Übung 48;
+### Übung 48:
 
 ```{r}
 gf_boxplot( total_bill ~ smoker, data= tips)
@@ -279,6 +278,7 @@ gf_boxplot( ~ total_bill | smoker , data=tips)
 gf_boxplot( ~ total_bill | sex, data = tips)
 ```
 
+
 Die Kennzahlen zum Boxpolot:
 
 ```{r}
@@ -286,58 +286,66 @@ favstats( ~ total_bill | sex , data=tips)
 ```
 
 
-
-
-
-
-
-
-
+Ein Blick auf das Steudiagramm, Trinkgeld in Abhängigkeit von Rechnungsbetrag:
 
 ```{r}
-gf_point(total_bill ~ tip, data=tips)
+gf_point(tip ~ total_bill, data=tips)
 ```
+
+
+Wie sieht der (Pearson-)Korrelationskoeffizent dazu aus? - Antwort:
 
 ```{r}
-cor(total_bill ~ tip, data=tips)
-
+cor(tip ~ total_bill, data=tips)
 ```
 
-Neue Spalte mit relativer Trinkgeldhöhe:
+
+Wir fügen eine neue Spalte "rel_tip" mit *relativer Trinkgeldhöhe* (= *Trinkgeld*/*Rechnungsbetrag*):
 
 ```{r}
 tips <- tips %>%
   mutate(rel_tip = tip/total_bill)
 ```
 
-Das Streudiagramm:
+
+Das Streudiagramm *relative Trinkgeldhöhe* in Abhängigkeit vom *Rechnungsbetrag*
 
 ```{r}
 gf_point(rel_tip ~ total_bill, data=tips)
 ```
 
 
+So sieht es aus, wenn wir die unabhängige und abhängige Variablen (aus versehen ;-) ) vertauschen:
+
 ```{r}
 gf_point( total_bill ~ rel_tip, data=tips)
 ```
 
 
+Der Rechnungsbetrag für Raucher und Nichtraucher als Histogramm:
 
 ```{r}
 gf_histogram( ~ total_bill | smoker, data=tips)
 ```
+
+
+Der Rechnungsbetrag für Raucher und Nichtraucher als Boxplot:
 
 ```{r}
 gf_boxplot( ~ total_bill | smoker, data=tips)
 ```
 
 
+Die Kennzahlen des Rechnungsbetrag für Raucher und Nichtraucher getrennt:
+
 ```{r}
 favstats( ~ total_bill | smoker, data=tips)
 ```
 
+
+Der *Interquartilsabstang* (*idr* für *inter quartil range*):
+
 ```{r}
 iqr( ~ total_bill | smoker, data=tips)
 ```
-
 
