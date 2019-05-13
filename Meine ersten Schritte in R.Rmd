@@ -362,3 +362,233 @@ Der *Interquartilsabstang* (*idr* für *inter quartil range*):
 iqr( ~ total_bill | smoker, data=tips)
 ```
 
+
+
+## Vorlesung vom 29.4.2019
+
+Zu erst MOSAIC und die tipping-Daten laden:
+
+```{r}
+library(mosaic)
+tips <- read.csv2("tips.csv")
+```
+
+Wie sieht der Zusammenhang zwischen Rechnungsbetrag und Trinkgeld aus?
+
+
+
+```{r}
+gf_point(tip ~ total_bill, data=tips)
+```
+
+
+
+```{r}
+cor(tip ~ total_bill, data=tips)
+
+```
+
+
+
+
+## Vorlesung vom 16.4.2019
+
+Wir laden Mosaic und die tipping Daten (nochmal) in den Speicher:
+
+
+```{r}
+library(mosaic)
+tips <- read.csv2("tips.csv")
+```
+
+Wir betrachten den Frauenanteil der Rechnungszahler*innen
+
+```{r}
+tally( ~ sex, data=tips, format = "proportion")
+```
+
+und visualisieren das ganze mit einem Säulendiagramm:
+
+```{r}
+gf_bar( ~ sex, data=tips, format = "proportion")
+```
+
+Wir wollen nun also den Frauenanteil unter der H0 simulieren:
+
+```{r}
+set.seed(2019416)
+
+Nullvtlg <- do(10000) *  # Wiederhole 10.000 mal einen Münzwurf
+  rflip(n=nrow(tips))    # von jeweils genau so vielen Zeilen wie in tips
+```
+
+Und dann visualisieren wir die Verteilung:
+```{r}
+gf_histogram( ~ prop, data=Nullvtlg)
+```
+
+Der beobachtete Frauenanteil in der Stichprobe als Schätzwert für $\pi$.
+
+```{r}
+propdach <- prop( ~ sex, data=tips, success="Female")
+propdach
+```
+
+Die Quantile für extreme Werte in der Verteilun unter der H0 ($pi = 0.5$ und $\alpha = 5\%$):
+
+```{r}
+quantile( ~ prop, data=Nullvtlg, probs = c(0.025, 0.975))
+```
+
+
+
+Der klassiche Test eines Anteilswerts:
+```{r}
+binom.test( ~ sex,
+            p = 0.5,
+            success="Female",
+            alternative = "two.sided",
+            data=tips)
+```
+
+
+
+Deskriptive Ananlyse der Rechnungshöhe:
+
+```{r}
+gf_histogram( ~ total_bill, data=tips)
+```
+
+
+
+```{r}
+favstats( ~ total_bill, data=tips)
+```
+
+Um eine Aussage über die mittlere Rechnungshöhe in der Popilation geben zu können, berechnen wir das Bootstrap-95%-KI:
+
+```{r}
+set.seed(20191604)
+
+Bootvtlg <- do(10000) *
+  mean( ~ total_bill, data=resample(tips))
+```
+
+Wir visualisieren nun die Bootstrap-Verteilun mit Hilfe eines Histogramms:
+
+```{r}
+gf_histogram( ~ mean, data = Bootvtlg)
+```
+
+
+Wir bestimmen nun aus der Bootstrapverteilung das 95%-Bootstrap-KI:
+```{r}
+quantile( ~ mean, data=Bootvtlg, probs= c(0.025, 0.975))
+```
+
+
+
+der klassische Einstichproben-t-Test lautet:
+```{r}
+t.test( ~ total_bill,
+        mu = 15,
+        alternative = "greater",
+        data=tips)
+```
+
+Was passiert mit dem p-Wert, wenn wir statt mit $\mu\leq 15$ mit $\mu \leq 19{,}5$ rechnen?
+
+```{r}
+t.test( ~ total_bill,
+        mu = 19.5,
+        alternative = "greater",
+        data=tips)
+```
+
+
+## Vorlesung vom 13.05.2019
+
+Wir laden Mosaic und die tipping Daten (nochmal) in den Speicher:
+
+```{r}
+library(mosaic)
+tips <- read.csv2("tips.csv")
+```
+
+
+Wir erstellen ein Lineares Modell:
+
+```{r}
+erglm1 <- lm(tip ~ total_bill, data=tips)
+erglm1
+```
+
+
+```{r}
+summary(erglm1)
+```
+
+
+### Lineares Modell: numerisch ~ kategorial
+
+```{r}
+erglm2 <- lm(tip ~ smoker, data=tips)
+erglm2
+```
+
+
+```{r}
+summary(erglm2)
+```
+
+
+Nullhypothese: $H_0: \beta_1 = 0$ d.h. es gibt keinen (lineare) Zusammenhang zwischen Trinkgeldhöhe und Raucher*innen am Tisch.
+
+```{r}
+set.seed(2009)
+Bootvtlg <- do(10000)* 
+  lm(tip ~ smoker, data=resample(tips))
+gf_histogram( ~ smokerYes, data=Bootvtlg) %>%
+  gf_vline(xintercept = 0)  # Wert der Nullhypothese!
+# 95%-Bootstrap-KI:
+quantile( ~ smokerYes, probs=c(0.975, 0.025), data=Bootvtlg)
+```
+
+
+
+
+```{r}
+set.seed(2009)
+Nullvtlg <- do(10000) *
+  lm(tip ~ shuffle(smoker), data=tips)
+
+stipro_beta_1 <- coef(lm(tip ~ smoker, data=tips))[2]
+
+gf_histogram( ~ smokerYes, data=Nullvtlg) %>%
+  gf_vline(xintercept = stipro_beta_1)
+
+# 95%-Annahmebereich:
+quantile( ~ smokerYes, probs=c(0.975, 0.025), data=Nullvtlg)
+```
+
+## Übunng 125
+
+```{r}
+lm(total_bill ~ day, data=tips)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
