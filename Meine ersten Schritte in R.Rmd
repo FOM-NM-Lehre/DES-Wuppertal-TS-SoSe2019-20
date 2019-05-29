@@ -603,6 +603,41 @@ erglm5 <- lm( tip ~ total_bill + smoker + total_bill:smoker + day + total_bill:d
 summary(erglm5)
 ```
 
+```{r}
+tips %>%
+  mutate(isSunday = case_when( day == "Sun" ~ "Sunday", TRUE ~ "NotSunday")) -> tips_mod
+ 
+```
+
+```{r}
+erglm6 <- lm( tip ~ total_bill + smoker + total_bill:smoker + isSunday + total_bill:isSunday, data= tips_mod)
+summary(erglm6)
+```
+
+```{r}
+plotModel(erglm6)
+```
+
+```{r}
+erglm7 <- lm( tip ~ total_bill + smoker + total_bill:smoker + isSunday + total_bill:isSunday, data= tips_mod)
+summary(erglm7)
+```
+
+Wir schauen uns nun die Modelle an. Als Maß nehmen wir die Summe der absoluten Abweichungen:
+
+```{r}
+tips_mod %>% select(total_bill, smoker, isSunday) ->tips_test
+
+# Einfaches Model: tip ~ total_bill:
+sum(abs(predict(lm(tip ~ total_bill, data=tips), newdata = tips_test, interval="prediction")[,1]-tips$tip))
+
+# Verbessertes Modell: tip ~ total_bill + smoker + total_bill:smoker
+sum(abs(predict(erglm4, newdata = tips_test, interval="prediction")[,1]-tips$tip))
+
+# Weiter verbessertes Modell: tip ~ total_bill + smoker + total_bill:smoker + isSunday + total_bill:isSunday
+sum(abs(predict(erglm7, newdata = tips_test, interval="prediction")[,1]-tips$tip))
+```
+
 
 ## Datenhandling
 
